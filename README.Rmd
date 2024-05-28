@@ -1,0 +1,12 @@
+---
+title: "README"
+author: "Cindy"
+date: "2024-05-27"
+output: html_document
+---
+This project include:
+1. A tidy data set
+2. A link to a Github repository with script for performing the analysis(run_analysis.R)
+3. A code book(CodeBook.md) that describes the variables, the data, and any transformations or work to clean up the data. 
+4. A README.md that explains how all of the scripts work and how they are connected.
+5. Analysis R Script

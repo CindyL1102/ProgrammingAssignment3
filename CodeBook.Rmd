@@ -1,0 +1,52 @@
+---
+title: "CodeBook"
+author: "Cindy"
+date: "2024-05-27"
+output: html_document
+---
+## R Markdown
+The data is from an experiment.
+Descrption:
+The experiments have been carried out with a group of 30 volunteers within an age bracket of 19-48 years. Each person performed six activities (WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING) wearing a smartphone (Samsung Galaxy S II) on the waist. Using its embedded accelerometer and gyroscope, 3-axial linear acceleration and 3-axial angular velocity at a constant rate of 50Hz are captured. The experiments have been video-recorded to label the data manually. The obtained dataset has been randomly partitioned into two sets, where 70% of the volunteers was selected for generating the training data and 30% the test data. 
+
+The sensor signals (accelerometer and gyroscope) were pre-processed by applying noise filters and then sampled in fixed-width sliding windows of 2.56 sec and 50% overlap (128 readings/window). The sensor acceleration signal, which has gravitational and body motion components, was separated using a Butterworth low-pass filter into body acceleration and gravity. The gravitational force is assumed to have only low frequency components, therefore a filter with 0.3 Hz cutoff frequency was used. From each window, a vector of features was obtained by calculating variables from the time and frequency domain.
+
+Transformations include
+1: Load the data and transform 'feature' and 'label'
+```{load data}
+labels <- fread(file.path(path,"UCI HAR Dataset/activity_labels.txt")
+                        , col.names = c("labels", "activity"))
+features <- fread(file.path(path,"UCI HAR Dataset/features.txt")
+                  , col.names= c("num", "feature"))
+```
+2.Draw the data containing mean or standard deviation
+```{draw mean and sd}
+meansd <- grep("(mean|std)\\(\\)", features[, feature])
+meansdrow <- features[meansd, feature]
+meansdrow <- gsub('[()]', '', meansdrow)
+```
+3. Load the training datasets and bind them together
+```{training datasets}
+trainXdata<- fread(file.path(path,"UCI HAR Dataset/train/X_train.txt"))[,meansd,with=FALSE]
+setnames(trainXdata,colnames(trainXdata), meansdrow)
+trainYdata<- fread(file.path(path,"UCI HAR Dataset/train/Y_train.txt")
+                   ,col.names= "trainlabel")
+trainSubjects <- fread(file.path(path,"UCI HAR Dataset/train/subject_train.txt")
+                       , col.names = "trainsubject")
+trainfinal<- cbind(trainXdata, trainYdata, trainSubjects)
+```
+4. Load the test dataset and bind them together
+```{test dataset}
+testXdata<- fread(file.path(path,"UCI HAR Dataset/test/X_test.txt"))[, meansd,with=FALSE]
+setnames(testXdata,colnames(testXdata), meansdrow)
+testYdata<- fread(file.path(path,"UCI HAR Dataset/test/Y_test.txt")
+                   ,col.names= "testlabel")
+testSubjects <- fread(file.path(path,"UCI HAR Dataset/test/subject_test.txt")
+                       , col.names = c("testsubject"))
+testfinal<- cbind(testSubjects, testYdata,testXdata)
+```
+5. Merge the training dataset and the test dataset
+```{Merge}
+final<- rbind(testfinal,trainfinal,fill=TRUE)
+```
+The final data set is a tidy dateset that includes the mean and standard deviation measurements of the original datasets.
